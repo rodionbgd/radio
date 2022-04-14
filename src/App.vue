@@ -7,71 +7,70 @@ import { reactive } from "vue";
 const dataPart = {
   disabled: false,
   title: "",
+  value: "",
 };
 const data = reactive({
   status: {
     items: ["all", "upcoming", "ongoing", "complete"],
+    name: "status",
     ...dataPart,
   },
   color: {
     items: ["red", "green", "blue", "white"],
+    name: "color",
     ...dataPart,
   },
 });
 
 const toggleStatus = () => {
   data.status.disabled = !data.status.disabled;
-  data.status.title = "";
 };
-
-const updateStatusTitle = (title) => {
-  data.status.title = title;
-};
-
 const toggleColor = () => {
   data.color.disabled = !data.color.disabled;
-  data.color.title = "";
 };
-
-const updateColorTitle = (title) => {
-  data.color.title = title;
+const updateStatusValue = (value) => {
+  data.status.value = value;
+};
+const updateColorValue = (value) => {
+  data.color.value = value;
 };
 </script>
 
 <template>
   <div class="h-screen flex flex-col items-center py-16 bg-gray-100">
-    <RadioGroup @toggle-group="toggleStatus">
-      <template #title>
-        Status
-        <span v-if="data.status.title"
-          >: {{ data.status.title }}</span
-        ></template
-      >
-      <template #main>
+    <RadioGroup
+      :value="data.status.value"
+      v-model="data.status.value"
+      :disabled="data.status.disabled"
+      :name="data.status.name"
+      @toggle-group="toggleStatus"
+    >
+      <template v-slot:default="{ n, disabled }">
         <RadioItem
-          v-for="item in data.status.items"
-          :key="item"
+          v-for="(item, index) in data.status.items"
+          :key="index"
           :item="item"
-          :disabled="data.status.disabled"
-          @update-radio="updateStatusTitle"
+          @update-value="updateStatusValue"
+          :disabled="disabled"
+          :name="n"
         />
       </template>
     </RadioGroup>
-
-    <RadioGroup @toggle-group="toggleColor">
-      <template #title>
-        Status
-        <span v-if="data.color.title && !data.color.disabled"
-          >: {{ data.color.title }}</span
-        ></template
-      >
-      <template #main>
+    <RadioGroup
+      :value="data.color.value"
+      v-model="data.color.value"
+      :name="data.color.name"
+      :disabled="data.color.disabled"
+      @toggle-group="toggleColor"
+    >
+      <template v-slot:default="{ n, disabled }">
         <RadioItem
-          v-for="item in data.color.items"
-          :key="item"
+          v-for="(item, index) in data.color.items"
+          :key="index"
           :item="item"
-          :disabled="data.color.disabled"
-          @update-radio="updateColorTitle"
+          @update-value="updateColorValue"
+          :disabled="disabled"
+          :name="n"
         />
       </template>
     </RadioGroup>

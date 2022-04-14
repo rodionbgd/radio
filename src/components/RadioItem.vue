@@ -2,18 +2,18 @@
   <div class="filter-switch-item flex relative h-8 bg-gray-300x">
     <input
       type="radio"
-      :id="props.item"
       class="sr-only"
-      name="status"
-      :value="props.item"
-      v-model="checked"
-      @input="check"
+      :id="props.item"
+      :name="props.name"
+      :disabled="props.disabled"
+      @change="updateValue"
     />
     <label
-      :for="props.item"
       class="h-8 py-1 px-2 text-sm leading-6 bg-white rounded shadow"
+      :for="props.item"
       :class="{
         'text-gray-300': props.disabled,
+        'opacity-80': props.disabled,
         'hover:text-gray-800': !props.disabled,
         'text-gray-600': !props.disabled,
       }"
@@ -24,45 +24,30 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
-
 const props = defineProps({
   item: {
     type: String,
     required: true,
     default: "",
   },
+  name: {
+    type: String,
+    required: false,
+    default: "",
+  },
   disabled: {
     type: Boolean,
-    required: true,
     default: false,
   },
 });
 
 const events = defineEmits({
-  "update-radio": null,
+  "update-value": null,
 });
-const checked = ref("");
-const check = (event) => {
-  if (props.disabled) {
-    setTimeout(() => {
-      event.target.checked = false;
-      events("update-radio");
-    }, 0);
-    return;
-  }
-  events("update-radio", event.target.value);
-  checked.value = event.target.value;
-};
 
-watch(
-  () => props.disabled,
-  () => {
-    if (props.disabled) {
-      checked.value = "";
-    }
-  }
-);
+const updateValue = () => {
+  events("update-value", props.item);
+};
 </script>
 
 <style scoped>
